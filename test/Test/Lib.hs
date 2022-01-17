@@ -15,47 +15,60 @@ import           Test.Utils
 
 
 data LibTest = LibTest
-  { libTestEntries :: [Text]
+  { libTestEntries       :: [Text]
   , libTestZephyrOptions :: Maybe [Text]
-  , libTestJsCmd :: Text
-  , libTestShouldPass :: Bool
+  , libTestJsFilename    :: Text
+  , libTestShouldPass    :: Bool
   -- ^ true if it should run without error, false if it should error
   }
 
 
 libTests :: [LibTest]
 libTests =
-  [ LibTest ["Unsafe.Coerce.Test.unsafeX"] Nothing "require('./dce-output/Unsafe.Coerce.Test').unsafeX(1)(1);" True
-  , LibTest ["Foreign.Test.add"] Nothing "require('./dce-output/Foreign.Test').add(1)(1);" True
-  , LibTest ["Foreign.Test.add"] Nothing "require('./dce-output/Foreign.Test/foreign.js').mult(1)(1);" False
-  , LibTest ["Eval.makeAppQueue"] Nothing "require('./dce-output/Eval').makeAppQueue;" True
-  , LibTest ["Eval.evalUnderArrayLiteral"] Nothing "require('./dce-output/Eval').evalUnderArrayLiteral;" True
-  , LibTest ["Eval.evalUnderObjectLiteral"] Nothing "require('./dce-output/Eval').evalUnderObjectLiteral;" True
-  , LibTest ["Eval.evalVars"] Nothing "require('./dce-output/Eval').evalVars;" True
-  , LibTest ["Eval"] Nothing "require('./dce-output/Eval').evalVars;" True
-  , LibTest ["Eval.recordUpdate"] Nothing
-       ( " var eval = require('./dce-output/Eval');\n"
-      <> " var foo = eval.recordUpdate({foo: '', bar: 0})(eval.Foo.create('foo'));\n"
-      <> " if (foo.foo != 'foo') {\n"
-      <> "    console.error(foo)\n"
-      <> "    throw('Error')\n"
-      <> " }\n"
-      )
-      True
-  , LibTest ["Literals.fromAnArray"] Nothing
-       ( " var lits = require('./dce-output/Literals');\n"
-      <> " if (lits.fromAnArray == null || lits.AStr == null || lits.AInt != null) {\n"
-      <> "    throw('Error')\n"
-      <> " }\n"
-      )
-      True
-  , LibTest ["Literals.fromAnObject"] Nothing
-       ( " var lits = require('./dce-output/Literals');\n"
-      <> " if (lits.fromAnObject == null || lits.AStr == null || lits.AInt != null) {\n"
-      <> "    throw('Error')\n"
-      <> " }\n"
-      )
-      True
+  [ LibTest ["Unsafe.Coerce.Test.unsafeX"]
+            Nothing
+            "unsafe-coerce-test-unsafex.js"
+            True
+  , LibTest ["Foreign.Test.add"]
+            Nothing
+            "foreign-test-add.js"
+            True
+  , LibTest ["Foreign.Test.add"]
+            Nothing
+            "foreign-test-mult.js"
+            False
+  , LibTest ["Eval.makeAppQueue"]
+            Nothing
+            "eval-makeappqueue.js"
+            True
+  , LibTest ["Eval.evalUnderArrayLiteral"]
+            Nothing
+            "eval-evalunderarrayliteral.js"
+            True
+  , LibTest ["Eval.evalUnderObjectLiteral"]
+            Nothing
+            "eval-evalunderobjectliteral.js"
+            True
+  , LibTest ["Eval.evalVars"]
+            Nothing
+            "eval.js"
+            True
+  , LibTest ["Eval"]
+            Nothing
+            "eval.js"
+            True
+  , LibTest ["Eval.recordUpdate"]
+            Nothing
+            "eval-recordupdate.js"
+            True
+  , LibTest ["Literals.fromAnArray"]
+            Nothing
+            "literals-fromanarray.js"
+            True
+  , LibTest ["Literals.fromAnObject"]
+            Nothing
+            "literals-fromanobject.js"
+            True
   ]
 
 
@@ -68,7 +81,7 @@ assertLib l = do
 runLibTest :: LibTest -> ExceptT TestError IO ()
 runLibTest LibTest { libTestEntries
                    , libTestZephyrOptions
-                   , libTestJsCmd
+                   , libTestJsFilename
                    , libTestShouldPass
                    } = do
   bowerInstall "LibTest"
@@ -77,8 +90,7 @@ runLibTest LibTest { libTestEntries
   (ecNode, stdNode, errNode) <- lift
     $ readProcessWithExitCode
         "node"
-        [ "-e"
-        , T.unpack libTestJsCmd
+        [ T.unpack libTestJsFilename
         ]
         ""
   when (libTestShouldPass && ecNode /= ExitSuccess)
