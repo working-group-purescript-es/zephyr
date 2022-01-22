@@ -1,15 +1,15 @@
 module Test.Lib (spec) where
 
-import           Prelude ()
-import           Prelude.Compat hiding (exp)
-import           Control.Monad.Trans.Class
 import           Control.Monad.Except
-import           Data.Text (Text)
-import qualified Data.Text as T
-import           System.Exit (ExitCode(..))
-import           System.Process (readProcessWithExitCode)
+import           Control.Monad.Trans.Class
+import           Data.Text                 (Text)
+import qualified Data.Text                 as T
+import           Prelude                   ()
+import           Prelude.Compat            hiding (exp)
+import           System.Exit               (ExitCode (..))
+import           System.Process            (readProcessWithExitCode)
+import           Test.HUnit                (assertEqual)
 import           Test.Hspec
-import           Test.HUnit (assertEqual)
 
 import           Test.Utils
 
@@ -68,6 +68,10 @@ libTests =
   , LibTest ["Literals.fromAnObject"]
             Nothing
             "literals-fromanobject.js"
+            True
+  , LibTest ["Reexp"]
+            Nothing
+            "use-reexports.js"
             True
   ]
 
