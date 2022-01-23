@@ -84,8 +84,7 @@ runLibTest LibTest { libTestEntries
                    , libTestJsFilename
                    , libTestShouldPass
                    } = do
-  bowerInstall "LibTest"
-  pursCompile "LibTest"
+  spagoBuild "LibTest"
   runZephyr "LibTest" libTestEntries libTestZephyrOptions
   (ecNode, stdNode, errNode) <- lift
     $ readProcessWithExitCode
