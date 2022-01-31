@@ -72,6 +72,10 @@ libTests =
             Nothing
             "use-reexports.js"
             True
+  , LibTest ["Data.Array.span"]
+            Nothing
+            "das-test.js"
+            True
   ]
 
 
