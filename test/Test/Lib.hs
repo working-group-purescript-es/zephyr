@@ -69,6 +69,10 @@ libTests =
             Nothing
             "literals-fromanobject.js"
             True
+  , LibTest ["Data.Array.span"]
+            Nothing
+            "das-test.js"
+            True
   ]
 
 
