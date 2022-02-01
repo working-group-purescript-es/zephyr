@@ -69,6 +69,10 @@ libTests =
             Nothing
             "literals-fromanobject.js"
             True
+  , LibTest ["Control.Alt.map"]
+            Nothing
+            "use-reexports.js"
+            True
   ]
 
 
