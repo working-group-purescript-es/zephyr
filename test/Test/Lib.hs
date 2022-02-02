@@ -73,6 +73,10 @@ libTests =
             Nothing
             "das-test.js"
             True
+  , LibTest ["Control.Alt.map"]
+            Nothing
+            "use-reexports.js"
+            True
   ]
 
 
